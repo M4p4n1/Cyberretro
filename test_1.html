@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cyberpunk GPT Chat</title>
+  <style>
+    body {
+      background-color: #0f0f1a;
+      color: #f0f0f0;
+      font-family: 'Courier New', monospace;
+      margin: 0;
+      padding: 20px;
+    }
+
+    #chat {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #1a1a2e;
+      border: 2px solid #fffb00;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 20px #00ff1555;
+    }
+
+    h1 {
+      text-align: center;
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff;
+    }
+
+    .message {
+      margin: 12px 0;
+      padding: 10px 14px;
+      border-radius: 6px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .user {
+      text-align: right;
+      background-color: #112d42;
+      border-left: 3px solid #00ffff;
+      margin-left: 80px;
+    }
+
+    .bot {
+      text-align: left;
+      background-color: #29153f;
+      border-right: 3px solid #ff00ff;
+      margin-right: 80px;
+    }
+
+    textarea {
+      background-color: #1f1f2e;
+      color: #00ffff;
+      border: 1px solid #00ffffaa;
+      border-radius: 4px;
+      padding: 10px;
+      width: 100%;
+      resize: none;
+      font-family: 'Courier New', monospace;
+      margin-top: 10px;
+    }
+
+    textarea:focus {
+      outline: none;
+      box-shadow: 0 0 10px #00ffff55;
+    }
+
+    #sendButton {
+      background-color: #ff00ff;
+      color: #fff;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.2s;
+    }
+
+    #sendButton:hover {
+      background-color: #cc00cc;
+      box-shadow: 0 0 10px #ff00ff55;
+    }
+
+    label {
+      color: #ffe100;
+      font-weight: bold;
+    }
+  </style>
+  <script src="https://js.puter.com/v2/"></script>
+</head>
+<body>
+  <div id="chat">
+    <h1>🤖 Cyberpunk GPT Chat</h1>
+
+    <label for="contextInput">🔍 Tilføj kontekst (valgfri)</label>
+    <textarea id="contextInput" rows="4" placeholder="Indsæt noter, tekstuddrag eller info..."></textarea>
+
+    <div id="messages"></div>
+
+    <textarea id="userInput" rows="3" placeholder="💬 Skriv din melding her..."></textarea>
+    <button id="sendButton">🚀 Send</button>
+  </div>
+
+  <script>
+    const messagesDiv = document.getElementById("messages");
+    const contextInput = document.getElementById("contextInput");
+    const userInput = document.getElementById("userInput");
+    const sendButton = document.getElementById("sendButton");
+
+    sendButton.addEventListener("click", async () => {
+      const userMessage = userInput.value.trim();
+      const contextText = contextInput.value.trim();
+      if (!userMessage) return;
+
+      addMessage(userMessage, "user");
+      userInput.value = "";
+
+      let fullPrompt = userMessage;
+      if (contextText) {
+        fullPrompt = `Brug følgende kontekst til at besvare spørgsmålet:\n\n${contextText}\n\nSpørgsmål: ${userMessage}`;
+      }
+
+      try {
+        const response = await puter.ai.chat(fullPrompt, {
+          model: "gpt-4o"
+        });
+        addMessage(response.message.content, "bot");
+      } catch (error) {
+        console.error("Fejl:", error);
+        addMessage("❌ Noget gik galt. Prøv igen senere.", "bot");
+      }
+    });
+
+    function addMessage(content, sender) {
+      const messageDiv = document.createElement("div");
+      messageDiv.className = `message ${sender}`;
+      messageDiv.textContent = content;
+      messagesDiv.appendChild(messageDiv);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+  </script>
+</body>
+</html>
